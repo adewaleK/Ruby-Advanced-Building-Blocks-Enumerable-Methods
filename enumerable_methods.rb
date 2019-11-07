@@ -139,6 +139,32 @@ module Enumerable
     array
   end
 
+  def my_inject(symbol, initial_value = nil)
+    memo = initial_value || self[0]
+    if symbol == :+
+      drop(1).my_each do |n|
+        memo += n
+      end
+    elsif symbol == :*
+      drop(1).my_each do |n|
+        memo *= n
+      end
+    elsif symbol == :/
+      drop(1).my_each do |n|
+        memo /= n
+      end
+    elsif symbol == :-
+      drop(1).my_each do |n|
+        memo -= n
+      end
+    elsif symbol == :**
+      drop(1).my_each do |n|
+        memo **= n
+      end
+    end
+    memo
+  end
+
 end
 
 # Code used to test the methods compared with the original ones
@@ -232,11 +258,15 @@ hash = {a: 1, b: 2, c: 3}
 # p hash.my_count { |key, value| value % 2 != 0 }
 
 # map vs. my_map
-p array.map
-p array.my_map
+# p array.map
+# p array.my_map
+#
+# p array.map { |n| n * 10 }
+# p array.my_map { |n| n * 10 }
+#
+# p hash.map { |key, value| [key, value] }
+# p hash.my_map { |key, value| [key, value] }
 
-p array.map { |n| n * 10 }
-p array.my_map { |n| n * 10 }
-
-p hash.map { |key, value| [key, value] }
-p hash.my_map { |key, value| [key, value] }
+# inject vs. my_inject
+p array.inject(:**)
+p array.my_inject(:**)
