@@ -81,6 +81,25 @@ module Enumerable
     boolean
   end
 
+  def my_none?
+    # Return false in case no block is provided
+    return false unless block_given?
+
+    boolean = true
+    if self.class == Array
+      my_each do |n|
+        boolean = false if yield(n)
+        break unless boolean
+      end
+    else
+      my_each do |key, value|
+        boolean = false if yield(key, value)
+        break unless boolean
+      end
+    end
+    boolean
+  end
+
 end
 
 # Code used to test the methods compared with the original ones
@@ -141,11 +160,21 @@ hash = {a: 1, b: 2, c: 3}
 # p hash.my_all? { |key, value| value < 4 }
 
 # any? vs. my_any?
-p array.any?
-p array.my_any?
+# p array.any?
+# p array.my_any?
+#
+# p array.any? { |n| n == 4 }
+# p array.my_any? { |n| n == 4 }
+#
+# p hash.any? {|key, value| key == :z}
+# p hash.my_any? {|key, value| key == :z}
 
-p array.any? { |n| n == 4 }
-p array.my_any? { |n| n == 4 }
+# none? vs. my_none?
+p array.none?
+p array.my_none?
 
-p hash.any? {|key, value| key == :z}
-p hash.my_any? {|key, value| key == :z}
+p array.none? { |n| n == 5 }
+p array.my_none? { |n| n == 5 }
+
+p hash.none? { |key, value| key == :c }
+p hash.none? { |key, value| key == :c}
