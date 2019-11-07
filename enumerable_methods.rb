@@ -100,6 +100,28 @@ module Enumerable
     boolean
   end
 
+  def my_count(element = nil)
+    counter = 0
+    if block_given?
+      if self.class == Array
+        my_each do |n|
+          counter += 1 if yield(n)
+        end
+      else
+        my_each do |key, value|
+          counter += 1 if yield(key, value)
+        end
+      end
+    elsif !block_given? && element.nil?
+      return length
+    elsif !block_given? && !element.nil?
+      my_each do |n|
+        counter += 1 if n == element
+      end
+    end
+    counter
+  end
+
 end
 
 # Code used to test the methods compared with the original ones
@@ -170,11 +192,24 @@ hash = {a: 1, b: 2, c: 3}
 # p hash.my_any? {|key, value| key == :z}
 
 # none? vs. my_none?
-p array.none?
-p array.my_none?
+# p array.none?
+# p array.my_none?
+#
+# p array.none? { |n| n == 5 }
+# p array.my_none? { |n| n == 5 }
+#
+# p hash.none? { |key, value| key == :c }
+# p hash.none? { |key, value| key == :c}
 
-p array.none? { |n| n == 5 }
-p array.my_none? { |n| n == 5 }
+# count? vs. my_count?
+p array.count
+p array.my_count
 
-p hash.none? { |key, value| key == :c }
-p hash.none? { |key, value| key == :c}
+p array.count(1)
+p array.my_count(1)
+
+p array.count { |n| n > 1 }
+p array.my_count { |n| n > 1 }
+
+p hash.count { |key, value| value % 2 != 0 }
+p hash.my_count { |key, value| value % 2 != 0 }
