@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# This module contains an implementation on the methods found in the
+# This module contains an implementation of some of the methods found in the
 # Enumerable module
 module Enumerable
 
@@ -30,7 +30,28 @@ module Enumerable
     end
   end
 
+  def my_select
+    # If no block is given, an Enumerator is returned instead.
+    return to_enum unless block_given?
+
+    enumerable = self.class == Array ? [] : {}
+    if enumerable.class == Array
+      my_each do |n|
+        enumerable.push(n) if yield(n)
+      end
+    else
+      my_each do |key, value|
+        enumerable[key] = value if yield(key, value)
+      end
+    end
+    enumerable
+  end
+
 end
+
+# Code used to test the methods compared with the original ones
+array = [1, 2, 3]
+hash = {a: 1, b: 2, c: 3}
 
 # "Tests"  for #my_each
 # puts [1, 2, 3].each
@@ -64,3 +85,13 @@ end
 # hash.my_each_with_index do |element, index|
 #   puts "Index: #{index}, Element: #{element}"
 # end
+
+# select vs. my_select
+p array.select
+p array.my_select
+
+p array.select { |n| n % 2 == 1 }
+p array.my_select { |n| n % 2 == 1 }
+
+p hash.select {|key, value| value == 2}
+p hash.my_select { |key, value| value == 2}
