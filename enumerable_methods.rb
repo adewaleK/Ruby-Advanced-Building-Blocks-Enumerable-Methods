@@ -64,11 +64,28 @@ module Enumerable
     boolean
   end
 
+  def my_any?
+    # Return true if no block is given
+    return true unless block_given?
+
+    boolean = false
+    if self.class == Array
+      my_each do |n|
+        boolean = true if yield(n)
+      end
+    else
+      my_each do |key, value|
+        boolean = true if yield(key, value)
+      end
+    end
+    boolean
+  end
+
 end
 
 # Code used to test the methods compared with the original ones
 array = [1, 2, 3]
-hash = { a: 1, b: 2, c: 3 }
+hash = {a: 1, b: 2, c: 3}
 
 # "Tests"  for #my_each
 # puts [1, 2, 3].each
@@ -114,11 +131,21 @@ hash = { a: 1, b: 2, c: 3 }
 # p hash.my_select { |key, value| value == 2}
 
 # all? vs. my_all?
-p array.all?
-p array.my_all?
+# p array.all?
+# p array.my_all?
+#
+# p array.all? { |n| n < 4 }
+# p array.my_all? { |n| n < 4 }
+#
+# p hash.all? { |key, value| value < 4 }
+# p hash.my_all? { |key, value| value < 4 }
 
-p array.all? { |n| n < 4 }
-p array.my_all? { |n| n < 4 }
+# any? vs. my_any?
+p array.any?
+p array.my_any?
 
-p hash.all? { |key, value| value < 4 }
-p hash.my_all? { |key, value| value < 4 }
+p array.any? { |n| n == 4 }
+p array.my_any? { |n| n == 4 }
+
+p hash.any? {|key, value| key == :z}
+p hash.my_any? {|key, value| key == :z}
