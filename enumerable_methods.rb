@@ -122,6 +122,23 @@ module Enumerable
     counter
   end
 
+  def my_map
+    # If no block is given, an enumerator is returned instead.
+    return to_enum unless block_given?
+
+    array = []
+    if self.class == Array
+      my_each do |n|
+        array << yield(n)
+      end
+    else
+      my_each do |key, value|
+        array << yield(key, value)
+      end
+    end
+    array
+  end
+
 end
 
 # Code used to test the methods compared with the original ones
@@ -202,14 +219,24 @@ hash = {a: 1, b: 2, c: 3}
 # p hash.none? { |key, value| key == :c}
 
 # count? vs. my_count?
-p array.count
-p array.my_count
+# p array.count
+# p array.my_count
+#
+# p array.count(1)
+# p array.my_count(1)
+#
+# p array.count { |n| n > 1 }
+# p array.my_count { |n| n > 1 }
+#
+# p hash.count { |key, value| value % 2 != 0 }
+# p hash.my_count { |key, value| value % 2 != 0 }
 
-p array.count(1)
-p array.my_count(1)
+# map vs. my_map
+p array.map
+p array.my_map
 
-p array.count { |n| n > 1 }
-p array.my_count { |n| n > 1 }
+p array.map { |n| n * 10 }
+p array.my_map { |n| n * 10 }
 
-p hash.count { |key, value| value % 2 != 0 }
-p hash.my_count { |key, value| value % 2 != 0 }
+p hash.map { |key, value| [key, value] }
+p hash.my_map { |key, value| [key, value] }
