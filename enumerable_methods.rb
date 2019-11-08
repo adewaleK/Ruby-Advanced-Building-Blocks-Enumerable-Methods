@@ -311,26 +311,35 @@ array_of_words = %w[cat sheep bear]
 # p hash.my_map { |key, value| [key, value] }
 
 # inject vs. my_inject
-p array.inject(:-)
-p array.my_inject(:-)
+# p array.inject(:-)
+# p array.my_inject(:-)
+#
+# p array.inject { |memo, n| memo - n }
+# p array.my_inject { |memo, n| memo - n }
+#
+# p array.inject(3, :-)
+# p array.my_inject(3, :-)
+#
+# p array.inject(2) { |memo, n| memo * n }
+# p array.my_inject(2) { |memo, n| memo * n }
+#
+# inject_test = array_of_words.inject do |memo, word|
+#   memo.length > word.length ? memo : word
+# end
+#
+# p inject_test
+#
+# my_inject_test = array_of_words.my_inject do |memo, word|
+#   memo.length > word.length ? memo : word
+# end
+#
+# p my_inject_test
 
-p array.inject { |memo, n| memo - n }
-p array.my_inject { |memo, n| memo - n }
-
-p array.inject(3, :-)
-p array.my_inject(3, :-)
-
-p array.inject(2) { |memo, n| memo * n }
-p array.my_inject(2) { |memo, n| memo * n }
-
-inject_test = array_of_words.inject do |memo, word|
-  memo.length > word.length ? memo : word
+# multiply_els method created to test my_inject method
+def multiply_els(array)
+  array.my_inject do |memo, n|
+    memo * n
+  end
 end
 
-p inject_test
-
-my_inject_test = array_of_words.my_inject do |memo, word|
-  memo.length > word.length ? memo : word
-end
-
-p my_inject_test
+p multiply_els([2, 4, 5])
