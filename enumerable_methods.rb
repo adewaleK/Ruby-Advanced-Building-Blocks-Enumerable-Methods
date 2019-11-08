@@ -343,3 +343,8 @@ def multiply_els(array)
 end
 
 p multiply_els([2, 4, 5])
+
+# Proc to test the implementation of the my_map method
+test_proc = proc { |n| n * 7 }
+p array.my_map { |n| n * 7 }
+p array.my_map(&test_proc)
