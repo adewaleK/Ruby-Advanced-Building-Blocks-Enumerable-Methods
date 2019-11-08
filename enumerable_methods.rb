@@ -139,27 +139,69 @@ module Enumerable
     array
   end
 
-  def my_inject(symbol, initial_value = nil)
+  def my_inject(symbol = nil, initial_value = nil)
+    if symbol.class != Symbol
+      temp = symbol
+      symbol = initial_value
+      initial_value = temp
+    end
+    value_provided = false
+    value_provided = true unless initial_value.nil?
     memo = initial_value || self[0]
-    if symbol == :+
-      drop(1).my_each do |n|
-        memo += n
+    case symbol
+    when :+
+      if !value_provided
+        drop(1).my_each do |n|
+          memo += n
+        end
+      else
+        my_each do |n|
+          memo += n
+        end
       end
-    elsif symbol == :*
-      drop(1).my_each do |n|
-        memo *= n
+    when :*
+      if !value_provided
+        drop(1).my_each do |n|
+          memo *= n
+        end
+      else
+        my_each do |n|
+          memo *= n
+        end
       end
-    elsif symbol == :/
-      drop(1).my_each do |n|
-        memo /= n
+    when :/
+      if !value_provided
+        drop(1).my_each do |n|
+          memo /= n
+        end
+      else
+        my_each do |n|
+          memo /= n
+        end
       end
-    elsif symbol == :-
-      drop(1).my_each do |n|
-        memo -= n
+    when :-
+      if !value_provided
+        drop(1).my_each do |n|
+          memo -= n
+        end
+      else
+        my_each do |n|
+          memo -= n
+        end
       end
-    elsif symbol == :**
+    when :**
+      if !value_provided
+        drop(1).my_each do |n|
+          memo **= n
+        end
+      else
+        my_each do |n|
+          memo **= n
+        end
+      end
+    else
       drop(1).my_each do |n|
-        memo **= n
+        memo = yield(memo, n)
       end
     end
     memo
@@ -170,6 +212,7 @@ end
 # Code used to test the methods compared with the original ones
 array = [1, 2, 3]
 hash = {a: 1, b: 2, c: 3}
+array_of_words = %w[cat sheep bear]
 
 # "Tests"  for #my_each
 # puts [1, 2, 3].each
@@ -268,5 +311,26 @@ hash = {a: 1, b: 2, c: 3}
 # p hash.my_map { |key, value| [key, value] }
 
 # inject vs. my_inject
-p array.inject(:**)
-p array.my_inject(:**)
+p array.inject(:-)
+p array.my_inject(:-)
+
+p array.inject { |memo, n| memo - n }
+p array.my_inject { |memo, n| memo - n }
+
+p array.inject(3, :-)
+p array.my_inject(3, :-)
+
+p array.inject(2) { |memo, n| memo * n }
+p array.my_inject(2) { |memo, n| memo * n }
+
+inject_test = array_of_words.inject do |memo, word|
+  memo.length > word.length ? memo : word
+end
+
+p inject_test
+
+my_inject_test = array_of_words.my_inject do |memo, word|
+  memo.length > word.length ? memo : word
+end
+
+p my_inject_test
