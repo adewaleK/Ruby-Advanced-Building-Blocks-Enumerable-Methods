@@ -4,7 +4,6 @@
 # This module contains an implementation of some of the methods found in the
 # Enumerable module
 module Enumerable
-
   def my_each
     # An enumerator is returned if no block is given
     return to_enum unless block_given?
@@ -206,7 +205,6 @@ module Enumerable
     end
     memo
   end
-
 end
 
 # Code used to test the methods compared with the original ones
@@ -214,7 +212,7 @@ puts "\nBelow you will find the results of applying the original method vs. the
 custom implementation."
 puts
 array = [1, 2, 3]
-hash = {a: 1, b: 2, c: 3}
+hash = { a: 1, b: 2, c: 3 }
 array_of_words = %w[cat sheep bear]
 
 puts 'We will use the following objects to check the outputs:'
@@ -246,7 +244,6 @@ puts 'hash.my_each { |key, value| puts "Key: #{key}, Value: #{value}" } output:
 '
 hash.my_each { |key, value| puts "Key: #{key}, Value: #{value}" }
 puts
-
 
 # "Tests" for #my_each_with_index
 puts '-' * 80
@@ -298,9 +295,9 @@ puts 'array.my_select(&:odd?) output: '
 p array.my_select(&:odd?)
 puts
 puts 'hash.select { |key, value| value == 2 } output: '
-p(hash.select { |key, value| value == 2 })
+p(hash.select { |_key, value| value == 2 })
 puts 'hash.my_select { |key, value| value == 2 } output: '
-p(hash.my_select { |key, value| value == 2 })
+p(hash.my_select { |_key, value| value == 2 })
 
 # all? vs. my_all?
 puts '-' * 80
@@ -316,9 +313,9 @@ puts 'array.my_all? { |n| n < 4 } output: '
 p(array.my_all? { |n| n < 4 })
 puts
 puts 'hash.all? { |key, value| value < 4 } output: '
-p(hash.all? { |key, value| value < 4 })
+p(hash.all? { |_key, value| value < 4 })
 puts 'hash.my_all? { |key, value| value < 4 } output: '
-p(hash.my_all? { |key, value| value < 4 })
+p(hash.my_all? { |_key, value| value < 4 })
 
 # any? vs. my_any?
 puts '-' * 80
@@ -334,9 +331,9 @@ puts 'array.my_any? { |n| n == 4 } output: '
 p(array.my_any? { |n| n == 4 })
 puts
 puts 'hash.any? {|key, value| key == :z} output: '
-p(hash.any? { |key, value| key == :z })
+p(hash.any? { |key, _value| key == :z })
 puts 'hash.my_any? {|key, value| key == :z} output: '
-p(hash.my_any? { |key, value| key == :z })
+p(hash.my_any? { |key, _value| key == :z })
 
 # none? vs. my_none?
 puts '-' * 80
@@ -352,9 +349,9 @@ puts 'array.my_none? { |n| n == 5 } output: '
 p(array.my_none? { |n| n == 5 })
 puts
 puts 'hash.none? { |key, value| key == :c } output: '
-p(hash.none? { |key, value| key == :c })
+p(hash.none? { |key, _value| key == :c })
 puts 'hash.none? { |key, value| key == :c} output: '
-p(hash.none? { |key, value| key == :c })
+p(hash.none? { |key, _value| key == :c })
 puts
 puts
 
@@ -377,9 +374,9 @@ puts 'array.my_count { |n| n > 1 }'
 p(array.my_count { |n| n > 1 })
 puts
 puts 'hash.count { |key, value| value.odd? } output: '
-p(hash.count { |key, value| value.odd? })
+p(hash.count { |_key, value| value.odd? })
 puts 'hash.my_count { |key, value| value.odd? } output: '
-p(hash.my_count { |key, value| value.odd? })
+p(hash.my_count { |_key, value| value.odd? })
 
 # map vs. my_map
 puts '-' * 80
@@ -444,7 +441,7 @@ puts '-' * 80
 puts 'multiply_els method'
 puts '-' * 80
 puts
-puts'def multiply_els(array)
+puts 'def multiply_els(array)
   array.my_inject do |memo, n|
     memo * n
   end
