@@ -46,14 +46,20 @@ module Enumerable
     enumerable
   end
 
-  def my_all?
-    # Return true if no block is given
-    return true unless block_given?
+  def my_all?(parameter = nil)
+    return true if self.class == Array && count.zero?
+    return false unless block_given? || !parameter.nil?
 
     boolean = true
     if self.class == Array
       my_each do |n|
-        boolean = false unless yield(n)
+        if block_given?
+          boolean = false unless yield(n)
+        elsif parameter.class == Regexp
+          boolean = false unless n.match(parameter)
+        else
+          boolean = false unless n.class <= parameter
+        end
       end
     else
       my_each do |key, value|
@@ -298,24 +304,38 @@ puts 'hash.select { |key, value| value == 2 } output: '
 p(hash.select { |_key, value| value == 2 })
 puts 'hash.my_select { |key, value| value == 2 } output: '
 p(hash.my_select { |_key, value| value == 2 })
+puts
 
-# all? vs. my_all?
+# # all? vs. my_all?
 puts '-' * 80
 puts 'all? vs. my_all?'
 puts '-' * 80
 puts
-puts 'array.all? output: ' + array.all?.to_s
-puts 'array.my_all? output: ' + array.my_all?.to_s
+puts '%w[ant bear cat].all? { |word| word.length >= 3 } output: '
+p(%w[ant bear cat].all? { |word| word.length >= 3 })
+puts '%w[ant bear cat].my_all? { |word| word.length >= 3 } output: '
+p(%w[ant bear cat].my_all? { |word| word.length >= 3 })
+puts '%w[ant bear cat].all? { |word| word.length >= 4 } output: '
+p(%w[ant bear cat].all? { |word| word.length >= 4 })
+puts '%w[ant bear cat].my_all? { |word| word.length >= 4 } output: '
+p(%w[ant bear cat].my_all? { |word| word.length >= 4 })
+puts '%w[ant bear cat].all?(/t/) output: '
+p(%w[ant bear cat].all?(/t/))
+puts '%w[ant bear cat].my_all?(/t/) output: '
+p(%w[ant bear cat].my_all?(/t/))
+puts '[1, 2i, 3.14].all?(Numeric) output: '
+p([1, 2i, 3.14].all?(Numeric))
+puts '[1, 2i, 3.14].my_all?(Numeric) output: '
+p([1, 2i, 3.14].my_all?(Numeric))
+puts '[nil, true, 99].all? output: '
+p([nil, true, 99].all?)
+puts '[nil, true, 99].my_all? output: '
+p([nil, true, 99].my_all?)
+puts '[].all? output: '
+p([].all?)
+puts '[].my_all? output: '
+p([].my_all?)
 puts
-puts 'array.all? { |n| n < 4 } output: '
-p(array.all? { |n| n < 4 })
-puts 'array.my_all? { |n| n < 4 } output: '
-p(array.my_all? { |n| n < 4 })
-puts
-puts 'hash.all? { |key, value| value < 4 } output: '
-p(hash.all? { |_key, value| value < 4 })
-puts 'hash.my_all? { |key, value| value < 4 } output: '
-p(hash.my_all? { |_key, value| value < 4 })
 
 # any? vs. my_any?
 puts '-' * 80
