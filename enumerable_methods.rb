@@ -69,20 +69,27 @@ module Enumerable
     boolean
   end
 
-  def my_any?
-    # Return true if no block is given
-    return true unless block_given?
+  def my_any?(argument = nil)
+    return false if self.class == Array && count.zero?
+    return true unless block_given? || !argument.nil?
 
     boolean = false
     if self.class == Array
       my_each do |n|
-        boolean = true if yield(n)
+        if block_given?
+          boolean = true if yield(n)
+        elsif argument.class == Regexp
+          boolean = true if n.match(argument)
+        elsif n.class <= argument
+          boolean = true
+        end
       end
     else
       my_each do |key, value|
         boolean = true if yield(key, value)
       end
     end
+
     boolean
   end
 
@@ -217,6 +224,7 @@ module Enumerable
     end
     memo
   end
+
 end
 
 # Code used to test the methods compared with the original ones
@@ -348,18 +356,30 @@ puts '-' * 80
 puts 'any? vs. my_any?'
 puts '-' * 80
 puts
-puts 'array.any? output: ' + array.any?.to_s
-puts 'array.my_any? output: ' + array.my_any?.to_s
-puts
-puts 'array.any? { |n| n == 4 } output:'
-p(array.any? { |n| n == 4 })
-puts 'array.my_any? { |n| n == 4 } output: '
-p(array.my_any? { |n| n == 4 })
-puts
-puts 'hash.any? {|key, value| key == :z} output: '
-p(hash.any? { |key, _value| key == :z })
-puts 'hash.my_any? {|key, value| key == :z} output: '
-p(hash.my_any? { |key, _value| key == :z })
+puts '%w[ant bear cat].any? { |word| word.length >= 3 } output: '
+p(%w[ant bear cat].any? { |word| word.length >= 3 })
+puts '%w[ant bear cat].my_any? { |word| word.length >= 3 } output: '
+p(%w[ant bear cat].my_any? { |word| word.length >= 3 })
+puts '%w[ant bear cat].any? { |word| word.length >= 4 } output: '
+p(%w[ant bear cat].any? { |word| word.length >= 4 })
+puts '%w[ant bear cat].my_any? { |word| word.length >= 4 } output: '
+p(%w[ant bear cat].my_any? { |word| word.length >= 4 })
+puts '%w[ant bear cat].any?(/d/) output: '
+p(%w[ant bear cat].any?(/d/))
+puts '%w[ant bear cat].my_any?(/d/) output: '
+p(%w[ant bear cat].my_any?(/d/))
+puts '[nil, true, 99].any?(Integer) output: '
+p([nil, true, 99].any?(Integer))
+puts '[nil, true, 99].my_any?(Integer) output: '
+p([nil, true, 99].my_any?(Integer))
+puts '[nil, true, 99].any? output: '
+p([nil, true, 99].any?)
+puts '[nil, true, 99].my_any? output: '
+p([nil, true, 99].my_any?)
+puts '[].any? output: '
+p([].any?)
+puts '[].my_any? output: '
+p([].my_any?)
 
 # none? vs. my_none?
 puts '-' * 80
