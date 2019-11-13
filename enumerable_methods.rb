@@ -249,7 +249,6 @@ custom implementation."
 puts
 array = [1, 2, 3]
 hash = { a: 1, b: 2, c: 3 }
-array_of_words = %w[cat sheep bear]
 
 puts 'We will use the following objects to check the outputs:'
 puts
