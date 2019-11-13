@@ -10,10 +10,21 @@ module Enumerable
 
     i = 0
     self_class = self.class
-    array = self_class == Array ? self : flatten
+    array = if self_class == Array
+              self
+            elsif self_class == Range
+              to_a
+            else
+              flatten
+            end
     while i < array.length
-      self_class == Array ? yield(array[i]) : yield(array[i], array[i + 1])
-      i += self_class == Array ? 1 : 2
+      if self_class == Hash
+        yield(array[i], array[i + 1])
+        i += 2
+      else
+        yield(array[i])
+        i += 1
+      end
     end
   end
 
@@ -165,7 +176,7 @@ module Enumerable
     end
     value_provided = false
     value_provided = true unless initial_value.nil?
-    memo = initial_value || self[0]
+    memo = initial_value || first
     case symbol
     when :+
       if !value_provided
@@ -218,8 +229,14 @@ module Enumerable
         end
       end
     else
-      drop(1).my_each do |n|
-        memo = yield(memo, n)
+      if !value_provided
+        drop(1).my_each do |n|
+          memo = yield(memo, n)
+        end
+      else
+        my_each do |n|
+          memo = yield(memo, n)
+        end
       end
     end
     memo
@@ -231,7 +248,7 @@ puts "\nBelow you will find the results of applying the original method vs. the
 custom implementation."
 puts
 array = [1, 2, 3]
-hash = { a: 1, b: 2, c: 3 }
+hash = {a: 1, b: 2, c: 3}
 array_of_words = %w[cat sheep bear]
 
 puts 'We will use the following objects to check the outputs:'
@@ -465,38 +482,28 @@ puts '-' * 80
 puts 'inject vs. my_inject'
 puts '-' * 80
 puts
-puts 'array.inject(:-) output: ' + array.inject(:-).to_s
-puts 'array.my_inject(:-) output: ' + array.my_inject(:-).to_s
-puts
-puts 'array.inject { |memo, n| memo - n } output: '
-p(array.inject { |memo, n| memo - n })
-puts 'array.my_inject { |memo, n| memo - n } output: '
-p(array.my_inject { |memo, n| memo - n })
-puts
-puts 'array.inject(3, :-) output: '
-p(array.inject(3, :-))
-puts 'array.my_inject(3, :-) output: '
-p(array.my_inject(3, :-))
-puts
-puts 'array.inject(2) { |memo, n| memo * n } output: '
-p(array.inject(2) { |memo, n| memo * n })
-puts 'array.my_inject(2) { |memo, n| memo * n } output: '
-p(array.my_inject(2) { |memo, n| memo * n })
-puts
-puts 'inject_test = array_of_words.inject do |memo, word|
+puts '(5..10).inject { |sum, n| sum + n } output: '
+p((5..10).inject { |sum, n| sum + n })
+puts '(5..10).my_inject { |sum, n| sum + n } output: '
+p((5..10).my_inject { |sum, n| sum + n })
+puts '(5..10).inject(1) { |product, n| product * n } output: '
+p((5..10).inject(1) { |product, n| product * n })
+puts '(5..10).my_inject(1) { |product, n| product * n } output: '
+p((5..10).my_inject(1) { |product, n| product * n })
+puts 'longest = %w[cat sheep bear].inject do |memo, word|
   memo.length > word.length ? memo : word
 end output: '
-inject_test = array_of_words.inject do |memo, word|
+longest = %w[cat sheep bear].inject do |memo, word|
   memo.length > word.length ? memo : word
 end
-p inject_test
-puts 'my_inject_test = array_of_words.my_inject do |memo, word|
+p longest
+puts 'longest = %w[cat sheep bear].my_inject do |memo, word|
   memo.length > word.length ? memo : word
-end'
-my_inject_test = array_of_words.my_inject do |memo, word|
+end output: '
+longest = %w[cat sheep bear].my_inject do |memo, word|
   memo.length > word.length ? memo : word
 end
-p my_inject_test
+p longest
 puts
 
 # multiply_els method created to test my_inject method
