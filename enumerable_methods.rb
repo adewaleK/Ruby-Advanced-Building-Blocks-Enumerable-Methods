@@ -86,14 +86,20 @@ module Enumerable
     boolean
   end
 
-  def my_none?
-    # Return false in case no block is provided
-    return false unless block_given?
+  def my_none?(argument = nil)
+    return true if count.zero? || (self[0].nil? && !include?(true))
+    return false unless block_given? || !argument.nil?
 
     boolean = true
     if self.class == Array
       my_each do |n|
-        boolean = false if yield(n)
+        if block_given?
+          boolean = false if yield(n)
+        elsif argument.class == Regexp
+          boolean = false if n.match(argument)
+        elsif n.class <= argument
+          boolean = false
+        end
         break unless boolean
       end
     else
@@ -218,7 +224,7 @@ puts "\nBelow you will find the results of applying the original method vs. the
 custom implementation."
 puts
 array = [1, 2, 3]
-hash = { a: 1, b: 2, c: 3 }
+hash = {a: 1, b: 2, c: 3}
 array_of_words = %w[cat sheep bear]
 
 puts 'We will use the following objects to check the outputs:'
@@ -360,20 +366,38 @@ puts '-' * 80
 puts 'none? vs. my_none?'
 puts '-' * 80
 puts
-puts 'array.none? output: ' + array.none?.to_s
-puts 'array.my_none? output: ' + array.my_none?.to_s
-puts
-puts 'array.none? { |n| n == 5 } output: '
-p(array.none? { |n| n == 5 })
-puts 'array.my_none? { |n| n == 5 } output: '
-p(array.my_none? { |n| n == 5 })
-puts
-puts 'hash.none? { |key, value| key == :c } output: '
-p(hash.none? { |key, _value| key == :c })
-puts 'hash.none? { |key, value| key == :c} output: '
-p(hash.none? { |key, _value| key == :c })
-puts
-puts
+puts '%w[ant bear cat].none? { |word| word.length == 5} output: '
+p(%w[ant bear cat].none? { |word| word.length == 5 })
+puts '%w[ant bear cat].my_none? { |word| word.length == 5} output: '
+p(%w[ant bear cat].my_none? { |word| word.length == 5 })
+puts '%w[ant bear cat].none? { |word| word.length >= 4 } output: '
+p(%w[ant bear cat].none? { |word| word.length >= 4 })
+puts '%w[ant bear cat].my_none? { |word| word.length >= 4 } output: '
+p(%w[ant bear cat].my_none? { |word| word.length >= 4 })
+puts '%w[ant bear cat].none?(/d/)) output: '
+p(%w[ant bear cat].none?(/d/))
+puts '%w[ant bear cat].my_none?(/d/) output: '
+p(%w[ant bear cat].my_none?(/d/))
+puts '([1, 3.14, 42].none?(Float)) output: '
+p([1, 3.14, 42].none?(Float))
+puts '([1, 3.14, 42].my_none?(Float)) output: '
+p([1, 3.14, 42].my_none?(Float))
+puts '[].none? output: '
+p([].none?)
+puts '[].my_none? output: '
+p([].my_none?)
+puts '[nil].none? output: '
+p([nil].none?)
+puts '[nil].my_none? output: '
+p([nil].my_none?)
+puts '[nil, false].none? output: '
+p([nil, false].none?)
+puts '[nil, false].my_none? output: '
+p([nil, false].my_none?)
+puts '[nil, false, true].none? output: '
+p([nil, false, true].none?)
+puts '[nil, false, true].my_none? output: '
+p([nil, false, true].my_none?)
 
 # count? vs. my_count?
 puts '-' * 80
