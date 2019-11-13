@@ -224,7 +224,6 @@ module Enumerable
     end
     memo
   end
-
 end
 
 # Code used to test the methods compared with the original ones
