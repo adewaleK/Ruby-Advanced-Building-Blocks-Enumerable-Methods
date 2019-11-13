@@ -254,7 +254,6 @@ puts 'We will use the following objects to check the outputs:'
 puts
 puts 'array = [1, 2, 3]'
 puts 'hash = {a: 1, b: 2, c: 3}'
-puts 'array_of_words = %w[cat sheep bear]'
 puts
 
 # "Tests"  for #my_each
