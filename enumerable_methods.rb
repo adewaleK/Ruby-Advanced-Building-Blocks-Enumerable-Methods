@@ -115,6 +115,8 @@ module Enumerable
           boolean = false if yield(n)
         elsif argument.class == Regexp
           boolean = false if n.match(argument)
+        elsif argument.class <= Numeric
+          boolean = false if n == argument
         elsif n.class <= argument
           boolean = false
         end
@@ -249,6 +251,7 @@ custom implementation."
 puts
 array = [1, 2, 3]
 hash = { a: 1, b: 2, c: 3 }
+words = %w[dog door rod blade]
 
 puts 'We will use the following objects to check the outputs:'
 puts
@@ -432,6 +435,11 @@ puts '[nil, false, true].none? output: '
 p([nil, false, true].none?)
 puts '[nil, false, true].my_none? output: '
 p([nil, false, true].my_none?)
+puts 'words.none?(5) output: '
+p(words.none?(5))
+puts 'words.my_none?(5) output: '
+p(words.my_none?(5))
+puts
 
 # count? vs. my_count?
 puts '-' * 80
