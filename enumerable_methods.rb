@@ -58,7 +58,8 @@ module Enumerable
   end
 
   def my_all?(parameter = nil)
-    return true if self.class == Array && count.zero?
+    return true if (self.class == Array && count.zero?) || (!block_given? &&
+        parameter.nil? && !include?(nil))
     return false unless block_given? || !parameter.nil?
 
     boolean = true
@@ -68,9 +69,12 @@ module Enumerable
           boolean = false unless yield(n)
         elsif parameter.class == Regexp
           boolean = false unless n.match(parameter)
+        elsif parameter.class <= Numeric
+          boolean = false unless n == parameter
         else
           boolean = false unless n.class <= parameter
         end
+        break unless boolean
       end
     else
       my_each do |key, value|
@@ -253,16 +257,28 @@ puts "\nBelow you will find the results of applying the original method vs. the
 custom implementation."
 puts
 array = [1, 2, 3]
-hash = { a: 1, b: 2, c: 3 }
+hash = {a: 1, b: 2, c: 3}
 words = %w[dog door rod blade]
 false_array = [nil, false, nil, false]
+long_array = [8, 4, 5, 0, 0, 1, 2, 3, 8, 3, 4, 6, 2, 1, 0, 2, 8, 8, 5, 0, 4, 8,
+              4, 8, 1, 2, 6, 0, 0, 6, 8, 7, 1, 0, 5, 7, 5, 8, 5, 6, 3, 4, 1, 3,
+              5, 4, 5, 8, 8, 5, 3, 1, 2, 7, 0, 2, 0, 0, 3, 1, 0, 8, 3, 7, 2, 3,
+              6, 1, 0, 4, 0, 3, 7, 6, 4, 6, 3, 1, 0, 5, 4, 4, 7, 3, 3, 2, 2, 4,
+              1, 2, 5, 4, 0, 3, 3, 3, 0, 1, 4, 2]
+true_array = [1, true, 'hi', []]
 
 puts 'We will use the following objects to check the outputs:'
 puts
 puts 'array = [1, 2, 3]'
 puts 'hash = {a: 1, b: 2, c: 3}'
 puts 'words = %w[dog door rod blade]'
-# puts 'false_array = [nil, false, nil, false]'
+puts 'false_array = [nil, false, nil, false]'
+puts 'long_array = [8, 4, 5, 0, 0, 1, 2, 3, 8, 3, 4, 6, 2, 1, 0, 2, 8, 8, 5,
+0, 4, 8, 4, 8, 1, 2, 6, 0, 0, 6, 8, 7, 1, 0, 5, 7, 5, 8, 5, 6, 3, 4, 1, 3, 5,
+ 4, 5, 8, 8, 5, 3, 1, 2, 7, 0, 2, 0, 0, 3, 1, 0, 8, 3, 7, 2, 3, 6, 1, 0, 4,
+0, 3, 7, 6, 4, 6, 3, 1, 0, 5, 4, 4, 7, 3, 3, 2, 2, 4, 1, 2, 5, 4, 0, 3, 3, 3,
+ 0, 1, 4, 2]'
+puts 'true_array = [1, true, \'hi\', []]'
 puts
 
 # "Tests"  for #my_each
@@ -343,7 +359,7 @@ puts 'hash.my_select { |key, value| value == 2 } output: '
 p(hash.my_select { |_key, value| value == 2 })
 puts
 
-# # all? vs. my_all?
+#  all? vs. my_all?
 puts '-' * 80
 puts 'all? vs. my_all?'
 puts '-' * 80
@@ -372,6 +388,14 @@ puts '[].all? output: '
 p([].all?)
 puts '[].my_all? output: '
 p([].my_all?)
+puts 'long_array.all?(3) output: '
+p(long_array.all?(3))
+puts 'long_array.my_all?(3) output: '
+p(long_array.my_all?(3))
+puts 'true_array.all? output: '
+p(true_array.all?)
+puts 'true_array.my_all? output: '
+p(true_array.my_all?)
 puts
 
 # any? vs. my_any?
@@ -537,11 +561,13 @@ puts 'def multiply_els(array)
     memo * n
   end
 end'
+
 def multiply_els(array)
   array.my_inject do |memo, n|
     memo * n
   end
 end
+
 puts
 puts 'multiply_els([2, 4, 5]) output: ' + multiply_els([2, 4, 5]).to_s
 puts
