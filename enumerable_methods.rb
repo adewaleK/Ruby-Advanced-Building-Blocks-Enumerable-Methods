@@ -81,7 +81,8 @@ module Enumerable
   end
 
   def my_any?(argument = nil)
-    return false if self.class == Array && count.zero?
+    return false if (self.class == Array && count.zero?) || (!block_given? &&
+        argument.nil? && !include?(true))
     return true unless block_given? || !argument.nil?
 
     boolean = false
@@ -91,6 +92,8 @@ module Enumerable
           boolean = true if yield(n)
         elsif argument.class == Regexp
           boolean = true if n.match(argument)
+        elsif argument.class == String
+          boolean = true if n == argument
         elsif n.class <= argument
           boolean = true
         end
@@ -252,11 +255,14 @@ puts
 array = [1, 2, 3]
 hash = { a: 1, b: 2, c: 3 }
 words = %w[dog door rod blade]
+false_array = [nil, false, nil, false]
 
 puts 'We will use the following objects to check the outputs:'
 puts
 puts 'array = [1, 2, 3]'
 puts 'hash = {a: 1, b: 2, c: 3}'
+puts 'words = %w[dog door rod blade]'
+# puts 'false_array = [nil, false, nil, false]'
 puts
 
 # "Tests"  for #my_each
@@ -397,6 +403,15 @@ puts '[].any? output: '
 p([].any?)
 puts '[].my_any? output: '
 p([].my_any?)
+puts "words.any?(\'cat\') output: "
+p(words.any?('cat'))
+puts "words.my_any?(\'cat\') output: "
+p(words.my_any?('cat'))
+puts 'false_array.any? output: '
+p(false_array.any?)
+puts 'false_array.my_any? output: '
+p(false_array.my_any?)
+puts
 
 # none? vs. my_none?
 puts '-' * 80
