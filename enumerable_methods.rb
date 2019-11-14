@@ -257,7 +257,7 @@ puts "\nBelow you will find the results of applying the original method vs. the
 custom implementation."
 puts
 array = [1, 2, 3]
-hash = {a: 1, b: 2, c: 3}
+hash = { a: 1, b: 2, c: 3 }
 words = %w[dog door rod blade]
 false_array = [nil, false, nil, false]
 long_array = [8, 4, 5, 0, 0, 1, 2, 3, 8, 3, 4, 6, 2, 1, 0, 2, 8, 8, 5, 0, 4, 8,
